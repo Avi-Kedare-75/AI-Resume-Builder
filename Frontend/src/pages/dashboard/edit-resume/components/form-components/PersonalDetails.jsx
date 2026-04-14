@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { addResumeData } from "@/features/resume/resumeFeatures";
 import { Input } from "@/components/ui/input";
@@ -8,125 +8,212 @@ import { LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 import { updateThisResume } from "@/Services/resumeAPI";
 
-function PersonalDetails({ resumeInfo, enanbledNext }) {
+function PersonalDetails({ resumeInfo, setEnabledNext }) {
   const { resume_id } = useParams();
   const dispatch = useDispatch();
-  const [loading, setLoading] = React.useState(false);
-  const [formData, setFormData] = React.useState({
-    firstName: resumeInfo?.firstName || "",
-    lastName: resumeInfo?.lastName || "",
-    jobTitle: resumeInfo?.jobTitle || "",
-    address: resumeInfo?.address || "",
-    phone: resumeInfo?.phone || "",
-    email: resumeInfo?.email || "",
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    jobTitle: "",
+    address: "",
+    phone: "",
+    email: "",
+    github: "",
+    linkedin: "",
+    photo: "",
   });
 
+  // ✅ Sync formData when resumeInfo changes
+  useEffect(() => {
+    if (resumeInfo) {
+      setFormData({
+        firstName: resumeInfo?.firstName || "",
+        lastName: resumeInfo?.lastName || "",
+        jobTitle: resumeInfo?.jobTitle || "",
+        address: resumeInfo?.address || "",
+        phone: resumeInfo?.phone || "",
+        email: resumeInfo?.email || "",
+        github: resumeInfo?.github || "",
+        linkedin: resumeInfo?.linkedin || "",
+        photo: resumeInfo?.photo || "",
+      });
+    }
+  }, [resumeInfo]);
+
+  // ✅ Handle input change (SAFE)
   const handleInputChange = (e) => {
-    enanbledNext(false);
+    if (setEnabledNext) setEnabledNext(false);
+
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
     dispatch(
       addResumeData({
         ...resumeInfo,
-        [e.target.name]: e.target.value,
+        [name]: value,
       })
     );
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
   };
 
-  const onSave = async (e) => {
-    setLoading(true);
-    e.preventDefault();
-    console.log("Personal Details Save Started");
-    const data = {
-      data: {
-        firstName: e.target.firstName.value,
-        lastName: e.target.lastName.value,
-        jobTitle: e.target.jobTitle.value,
-        address: e.target.address.value,
-        phone: e.target.phone.value,
-        email: e.target.email.value,
-      },
+  // ✅ Handle photo upload
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const updatedData = {
+        ...formData,
+        photo: reader.result,
+      };
+
+      setFormData(updatedData);
+
+      dispatch(
+        addResumeData({
+          ...resumeInfo,
+          ...updatedData,
+        })
+      );
     };
-    if (resume_id) {
-      try {
-        const response = await updateThisResume(resume_id, data);
-        toast("Resume Updated", "success");
-      } catch (error) {
-        toast(error.message, `failed`);
-        console.log(error.message);
-      } finally {
-        enanbledNext(true);
-        setLoading(false);
+
+    reader.readAsDataURL(file);
+  };
+
+  // ✅ Save to backend
+  const onSave = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      if (resume_id) {
+        await updateThisResume(resume_id, { data: formData });
+        toast("Resume Updated Successfully");
       }
+    } catch (error) {
+      console.error(error);
+      toast("Error updating resume");
+    } finally {
+      if (setEnabledNext) setEnabledNext(true);
+      setLoading(false);
     }
   };
 
   return (
     <div className="p-5 shadow-lg rounded-lg border-t-primary border-t-4 mt-10">
-      <h2 className="font-bold text-lg">Personal Detail</h2>
-      <p>Get Started with the basic information</p>
+      <h2 className="font-bold text-lg">Personal Details</h2>
+      <p>Get started with your basic information</p>
 
       <form onSubmit={onSave}>
         <div className="grid grid-cols-2 mt-5 gap-3">
+
+          {/* First Name */}
           <div>
-            <label className="text-sm">First Name</label>
+            <label>First Name</label>
             <Input
               name="firstName"
-              defaultValue={resumeInfo?.firstName}
-              required
+              value={formData.firstName || ""}
               onChange={handleInputChange}
+              required
             />
           </div>
+
+          {/* Last Name */}
           <div>
-            <label className="text-sm">Last Name</label>
+            <label>Last Name</label>
             <Input
               name="lastName"
-              required
+              value={formData.lastName || ""}
               onChange={handleInputChange}
-              defaultValue={resumeInfo?.lastName}
+              required
             />
           </div>
+
+          {/* Job Title */}
           <div className="col-span-2">
-            <label className="text-sm">Job Title</label>
+            <label>Job Title</label>
             <Input
               name="jobTitle"
-              defaultValue={resumeInfo?.jobTitle}
+              value={formData.jobTitle || ""}
               onChange={handleInputChange}
             />
           </div>
+
+          {/* Address */}
           <div className="col-span-2">
-            <label className="text-sm">Address</label>
+            <label>Address</label>
             <Input
               name="address"
-              required
-              defaultValue={resumeInfo?.address}
+              value={formData.address || ""}
               onChange={handleInputChange}
+              required
             />
           </div>
+
+          {/* Phone */}
           <div>
-            <label className="text-sm">Phone</label>
+            <label>Phone</label>
             <Input
               name="phone"
-              required
-              defaultValue={resumeInfo?.phone}
+              value={formData.phone || ""}
               onChange={handleInputChange}
+              required
             />
           </div>
+
+          {/* Email */}
           <div>
-            <label className="text-sm">Email</label>
+            <label>Email</label>
             <Input
               name="email"
+              value={formData.email || ""}
+              onChange={handleInputChange}
               required
-              defaultValue={resumeInfo?.email}
+            />
+          </div>
+
+          {/* GitHub */}
+          <div>
+            <label>GitHub</label>
+            <Input
+              name="github"
+              value={formData.github || ""}
               onChange={handleInputChange}
             />
           </div>
+
+          {/* LinkedIn */}
+          <div>
+            <label>LinkedIn</label>
+            <Input
+              name="linkedin"
+              value={formData.linkedin || ""}
+              onChange={handleInputChange}
+            />
+          </div>
+
+          {/* Photo Upload */}
+          <div className="col-span-2">
+            <label>Upload Photo</label>
+            <Input type="file" onChange={handlePhotoUpload} />
+          </div>
+
         </div>
+
+        {/* Save Button */}
         <div className="mt-3 flex justify-end">
           <Button type="submit" disabled={loading}>
-            {loading ? <LoaderCircle className="animate-spin" /> : "Save"}
+            {loading ? (
+              <LoaderCircle className="animate-spin" />
+            ) : (
+              "Save"
+            )}
           </Button>
         </div>
       </form>

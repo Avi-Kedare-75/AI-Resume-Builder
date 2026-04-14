@@ -3,49 +3,87 @@ import React from "react";
 function PersonalDeatailPreview({ resumeInfo }) {
   return (
     <div>
-      <h2
-        className="font-bold text-xl text-center"
-        style={{
-          color: resumeInfo?.themeColor,
-        }}
-      >
-        {resumeInfo?.firstName} {resumeInfo?.lastName}
-      </h2>
-      <h2 className="text-center text-sm font-medium">
-        {resumeInfo?.jobTitle}
-      </h2>
-      <h2
-        className="text-center font-normal text-xs"
-        style={{
-          color: resumeInfo?.themeColor,
-        }}
-      >
-        {resumeInfo?.address}
-      </h2>
 
-      <div className="flex justify-between">
-        <h2
-          className="font-normal text-xs"
-          style={{
-            color: resumeInfo?.themeColor,
-          }}
-        >
-          {resumeInfo?.phone}
-        </h2>
-        <h2
-          className="font-normal text-xs"
-          style={{
-            color: resumeInfo?.themeColor,
-          }}
-        >
-          {resumeInfo?.email}
-        </h2>
+      {/* HEADER */}
+      <div className="flex items-center gap-4">
+
+        {/* 📸 PHOTO */}
+        {resumeInfo?.photo && (
+          <img
+            src={resumeInfo.photo}
+            alt="profile"
+            className="w-20 h-20 object-cover rounded border"
+          />
+        )}
+
+        {/* TEXT INFO */}
+        <div className="flex-1">
+
+          {/* NAME */}
+          <h2
+            className="font-bold text-xl"
+            style={{ color: resumeInfo?.themeColor || "#000" }}
+          >
+            {resumeInfo?.firstName || ""} {resumeInfo?.lastName || ""}
+          </h2>
+
+          {/* JOB */}
+          {resumeInfo?.jobTitle && (
+            <p className="text-sm font-medium">
+              {resumeInfo.jobTitle}
+            </p>
+          )}
+
+          {/* ADDRESS */}
+          {resumeInfo?.address && (
+            <p
+              className="text-xs"
+              style={{ color: resumeInfo?.themeColor || "#000" }}
+            >
+              {resumeInfo.address}
+            </p>
+          )}
+
+          {/* CONTACT */}
+          <div className="flex flex-wrap gap-3 text-xs mt-1">
+            {resumeInfo?.phone && <span>{resumeInfo.phone}</span>}
+            {resumeInfo?.email && <span>{resumeInfo.email}</span>}
+          </div>
+
+          {/* 🔥 LINKS */}
+          <div className="flex gap-4 text-xs mt-1">
+            {resumeInfo?.github && (
+              <a
+                href={resumeInfo.github}
+                target="_blank"
+                rel="noopener noreferrer"   // ✅ FIX (important)
+                className="underline"
+                style={{ color: resumeInfo?.themeColor || "#000" }}
+              >
+                GitHub
+              </a>
+            )}
+
+            {resumeInfo?.linkedin && (
+              <a
+                href={resumeInfo.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"   // ✅ FIX
+                className="underline"
+                style={{ color: resumeInfo?.themeColor || "#000" }}
+              >
+                LinkedIn
+              </a>
+            )}
+          </div>
+
+        </div>
       </div>
+
+      {/* LINE */}
       <hr
-        className="border-[1.5px] my-2"
-        style={{
-          borderColor: resumeInfo?.themeColor,
-        }}
+        className="border-[1.5px] my-3"
+        style={{ borderColor: resumeInfo?.themeColor || "#000" }}
       />
     </div>
   );

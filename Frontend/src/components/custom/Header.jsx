@@ -36,7 +36,12 @@ function Header({user}) {
       id="printHeader"
       className="flex justify-between px-10 py-5 shadow-md items-center"
     >
-      <img src={logo} alt="logo" width={100} height={100} />
+      
+    <div>
+      <img src="/Resume Logo.png" alt="logo" width={200} height={200} />
+    </div>
+
+
       {user ? (
         <div className="flex items-center gap-4">
           <Button

@@ -14,8 +14,7 @@ function HomePage() {
   const dispatch = useDispatch();
   const handleClick = () => {
     window.open(
-      "https://github.com/sahidrajaansari/Ai-Resume-Builder",
-      "_blank"
+      ""
     );
   };
 
@@ -128,14 +127,17 @@ function HomePage() {
       </section>
       <footer className="bg-white" aria-labelledby="footer-heading">
         <div className="mt-16 border-t border-gray-900/10 pt-8 sm:mt-20 lg:mt-24 p-5 flex justify-between">
-          <p className="text-xs leading-5 text-gray-500">
-            &copy; 2024 Ai-Resume-Builder. All rights reserved.
-          </p>
+           <div className="mt-6 flex justify-end">
+  <p className="text-[18px] text-black-500">
+    All Rights <span className="font-semibold">Reserved 2026 &copy;</span>
+  </p>
+</div>
           <div>
-            <Button variant="secondary" onClick={handleClick}>
-              <FaGithub className="w-4 h-4 mr-1" />
-              GitHub
-            </Button>
+            <div className="mt-6 flex justify-end">
+  <p className="text-[18px] text-black-500">
+    Developed By <span className="font-semibold">Avi Kedare</span>
+  </p>
+</div>
           </div>
         </div>
       </footer>
